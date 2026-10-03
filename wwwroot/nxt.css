@@ -378,11 +378,15 @@ body {
     display: block; width: 100%; min-height: 56px; max-height: 160px; resize: none;
     border: 1px solid var(--nxt-border); border-radius: 28px;
     background: var(--nxt-card); color: var(--nxt-text);
-    padding: 15px 18px; padding-inline-end: 56px;
+    padding: 15px 56px 15px 18px;
     font: inherit; line-height: 1.4;
     box-shadow: var(--nxt-shadow-md);
 }
-.nxt-ai-input.has-mic .nxt-ai-textarea { padding-inline-end: 100px; }
+/* Physical padding: the textarea is dir="auto", so its own direction follows what is typed,
+   while the buttons follow the page direction. */
+.nxt-ai-input.has-mic .nxt-ai-textarea { padding-right: 100px; }
+[dir="rtl"] .nxt-ai-textarea { padding: 15px 18px 15px 56px; }
+[dir="rtl"] .nxt-ai-input.has-mic .nxt-ai-textarea { padding-left: 100px; padding-right: 18px; }
 .nxt-ai-textarea::placeholder { color: var(--nxt-text-2); font-size: 14px; }
 .nxt-ai-textarea:focus { border-color: var(--nxt-accent); outline: 0; }
 .nxt-ai-send, .nxt-ai-mic {

@@ -61,7 +61,7 @@
                     }
                     @if (!string.IsNullOrWhiteSpace(reply.ActionText) && !string.IsNullOrWhiteSpace(reply.ActionHref))
                     {
-                        <a class="nxt-ai-link" href="@reply.ActionHref">@reply.ActionText</a>
+                        <a class="nxt-ai-link" href="@reply.ActionHref" target="@(reply.ActionNewTab ? "_blank" : null)" rel="@(reply.ActionNewTab ? "noopener noreferrer" : null)">@reply.ActionText</a>
                     }
                 </div>
             </div>

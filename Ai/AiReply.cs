@@ -17,6 +17,7 @@ public sealed class AiReply
     /// <summary>Optional action button under the bubble (e.g. "Open project").</summary>
     public string? ActionText { get; init; }
     public string? ActionHref { get; init; }
+    public bool ActionNewTab { get; init; }
 
     public static AiReply Error(string text) => new() { Text = text, IsError = true };
 }

@@ -278,6 +278,7 @@ body {
 .nxt-version-banner .nxt-icon-button { width: 36px; height: 36px; }
 
 /* ---------- Settings ---------- */
+.nxt-settings { width: 100%; max-width: var(--nxt-max-width); margin-inline: auto; }
 .nxt-settings-sections { padding: var(--nxt-space-4); display: grid; gap: var(--nxt-space-3); }
 .nxt-settings-card { display: grid; gap: var(--nxt-space-3); }
 .nxt-settings-card-head { display: flex; gap: var(--nxt-space-3); align-items: flex-start; }

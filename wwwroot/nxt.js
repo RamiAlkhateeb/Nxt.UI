@@ -23,6 +23,7 @@
     const resolved = resolveTheme(mode);
     const root = document.documentElement;
     root.dataset.theme = resolved;
+    root.dataset.bsTheme = resolved;   // Bootstrap 5.3 components follow along where an app still uses them
     root.dataset.themeMode = mode;
     root.style.colorScheme = resolved;
     // Keep the browser chrome (status bar, tab colour) in step with the page.

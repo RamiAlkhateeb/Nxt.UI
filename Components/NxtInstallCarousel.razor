@@ -58,10 +58,18 @@
     [Parameter] public bool ShowProgress { get; set; } = true;
     [Parameter] public string? FinishText { get; set; }
     [Parameter] public EventCallback OnFinish { get; set; }
+    /// <summary>Optional two-way binding of the visible slide (<c>@bind-Current</c>).</summary>
+    [Parameter] public int Current { get; set; }
+    [Parameter] public EventCallback<int> CurrentChanged { get; set; }
 
     private int current;
 
-    protected override void OnParametersSet() => current = Math.Clamp(current, 0, Math.Max(0, Slides.Count - 1));
+    protected override void OnParametersSet() => current = Math.Clamp(Current, 0, Math.Max(0, Slides.Count - 1));
 
-    private void Go(int index) => current = Math.Clamp(index, 0, Math.Max(0, Slides.Count - 1));
+    private async Task Go(int index)
+    {
+        current = Math.Clamp(index, 0, Math.Max(0, Slides.Count - 1));
+        Current = current;
+        await CurrentChanged.InvokeAsync(current);
+    }
 }

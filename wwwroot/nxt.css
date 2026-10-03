@@ -130,7 +130,7 @@ body {
 .nxt-icon-button:active:not(:disabled) { transform: scale(.94); }
 .nxt-icon-button:disabled { opacity: .5; cursor: not-allowed; }
 .nxt-icon-button.is-accent { background: var(--nxt-accent); color: var(--nxt-on-accent); }
-.nxt-icon-button svg, .nxt-ai-send svg, .nxt-ai-mic svg {
+.nxt-icon-button svg {
     width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;
 }
 [dir="rtl"] .nxt-back svg { transform: scaleX(-1); }
@@ -324,7 +324,7 @@ body {
 .nxt-carousel-actions > * { flex: 1 1 0; }
 
 /* ---------- AI assistant ---------- */
-.nxt-ai { padding-bottom: calc(140px + env(safe-area-inset-bottom)); }
+.nxt-ai { padding-bottom: calc(110px + env(safe-area-inset-bottom)); }
 .nxt-ai-thread { display: flex; flex-direction: column; gap: 12px; padding: 16px; }
 .nxt-ai-empty { margin: 32px 8px 0; display: flex; flex-direction: column; align-items: center; gap: 24px; text-align: center; color: var(--nxt-text-2); font-size: 15px; }
 .nxt-ai-empty p { margin: 0; max-width: 280px; }
@@ -374,41 +374,47 @@ body {
     inset-inline: 0; margin-inline: auto;
     bottom: calc(var(--nxt-bottom-nav-h) + env(safe-area-inset-bottom));
     width: 100%; max-width: var(--nxt-max-width);
-    padding: 10px 16px 12px;
-    background: linear-gradient(to top, var(--nxt-page) 75%, transparent);
+    padding: 10px 12px 14px;
+    background: linear-gradient(to top, var(--nxt-page) 70%, transparent);
 }
-.nxt-ai-input { position: relative; }
-.nxt-ai-textarea {
-    display: block; width: 100%; min-height: 56px; max-height: 160px; resize: none;
-    border: 1px solid var(--nxt-border); border-radius: 28px;
-    background: var(--nxt-card); color: var(--nxt-text);
-    padding: 15px 56px 15px 18px;
-    font: inherit; line-height: 1.4;
-    box-shadow: var(--nxt-shadow-md);
+
+/* ---------- Composer (chat-style input with dictation) ---------- */
+.nxt-composer {
+    display: flex; align-items: flex-end; gap: 6px;
+    padding: 8px; padding-inline-start: 18px;
+    border: 1px solid var(--nxt-border);
+    border-radius: 28px;
+    background: var(--nxt-card);
+    box-shadow: var(--nxt-shadow-lg);
+    transition: border-color .15s ease, box-shadow .15s ease;
 }
-/* Physical padding: the textarea is dir="auto", so its own direction follows what is typed,
-   while the buttons follow the page direction. */
-.nxt-ai-input.has-mic .nxt-ai-textarea { padding-right: 100px; }
-[dir="rtl"] .nxt-ai-textarea { padding: 15px 18px 15px 56px; }
-[dir="rtl"] .nxt-ai-input.has-mic .nxt-ai-textarea { padding-left: 100px; padding-right: 18px; }
-.nxt-ai-textarea::placeholder { color: var(--nxt-text-2); font-size: 14px; }
-.nxt-ai-textarea:focus { border-color: var(--nxt-accent); outline: 0; }
-.nxt-ai-send, .nxt-ai-mic {
-    position: absolute; bottom: 9px;
-    width: 38px; height: 38px; min-height: 0; padding: 0;
+.nxt-composer:focus-within { border-color: var(--nxt-accent); box-shadow: 0 0 0 3px var(--nxt-accent-soft), var(--nxt-shadow-lg); }
+.nxt-composer-input {
+    flex: 1; min-width: 0; max-height: 140px;
+    padding: 9px 0; border: 0; outline: 0; resize: none;
+    background: transparent; color: var(--nxt-text);
+    font: inherit; line-height: 1.45;
+}
+.nxt-composer-input::placeholder { color: var(--nxt-text-2); }
+.nxt-composer.is-listening .nxt-composer-input::placeholder { color: var(--nxt-accent); }
+.nxt-composer-mic, .nxt-composer-send {
+    flex: 0 0 40px; width: 40px; height: 40px; min-height: 0; padding: 0;
     display: grid; place-items: center;
-    border: 0; border-radius: 50%;
-    cursor: pointer; transition: opacity .15s ease, transform .15s ease, background-color .15s ease;
+    border: 0; border-radius: 50%; cursor: pointer;
+    transition: background-color .15s ease, color .15s ease, transform .15s ease;
 }
-.nxt-ai-send { inset-inline-end: 9px; background: var(--nxt-accent); color: var(--nxt-on-accent); }
-.nxt-ai-send:disabled { background: var(--nxt-inset); color: var(--nxt-text-2); cursor: not-allowed; }
-.nxt-ai-mic { inset-inline-end: 52px; background: transparent; color: var(--nxt-text-2); }
-.nxt-ai-mic:hover { color: var(--nxt-text); background: var(--nxt-inset); }
-.nxt-ai-mic.listening { color: #fff; background: var(--nxt-danger); animation: nxt-pulse 1.4s ease-in-out infinite; }
-.nxt-ai-send:active:not(:disabled), .nxt-ai-mic:active { transform: scale(.94); }
-@keyframes nxt-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(var(--nxt-accent-rgb), .45); } 50% { box-shadow: 0 0 0 8px rgba(var(--nxt-accent-rgb), 0); } }
+.nxt-composer-mic svg, .nxt-composer-send svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.nxt-composer-mic { background: transparent; color: var(--nxt-text-2); }
+.nxt-composer-mic:hover { background: var(--nxt-inset); color: var(--nxt-text); }
+.nxt-composer-mic.listening { background: var(--nxt-accent-soft); color: var(--nxt-accent); animation: nxt-pulse 1.2s ease-in-out infinite; }
+.nxt-composer-send { background: var(--nxt-accent); color: var(--nxt-on-accent); }
+.nxt-composer-send:hover:not(:disabled) { background: var(--nxt-accent-hover); }
+.nxt-composer-send:active:not(:disabled) { transform: scale(.92); }
+.nxt-composer-send:disabled { background: var(--nxt-border); color: var(--nxt-text-2); cursor: not-allowed; }
+.nxt-composer-error { margin: 6px 12px 0; color: var(--nxt-danger); font-size: 13px; text-align: center; }
+@keyframes nxt-pulse { 50% { box-shadow: 0 0 0 7px rgba(var(--nxt-accent-rgb), .15); } }
 
 @media (prefers-reduced-motion: reduce) {
-    .nxt-orb-core, .nxt-orb-core svg, .nxt-orb-ring, .nxt-orb-orbit, .nxt-spark, .nxt-skeleton-line, .nxt-dots i { animation: none; }
+    .nxt-orb-core, .nxt-orb-core svg, .nxt-orb-ring, .nxt-orb-orbit, .nxt-spark, .nxt-skeleton-line, .nxt-dots i, .nxt-composer-mic.listening { animation: none; }
     .nxt-spark { opacity: .8; }
 }

@@ -4,7 +4,6 @@
 @inject GeminiClient Gemini
 @inject NxtOptions Options
 @inject IJSRuntime JS
-@implements IAsyncDisposable
 
 @* The family's AI assistant: identical thread, idle orb, bubbles and pinned composer in every app.
    The app only supplies OnSend, which turns the user's text into an AiReply. *@
@@ -79,25 +78,9 @@
     </div>
 </div>
 
-<div class="nxt-ai-composer" dir="@Locale.Direction">
-    <div class="nxt-ai-input @(ShowMic ? "has-mic" : "")">
-        <textarea class="nxt-ai-textarea" dir="auto" rows="@Rows"
-                  @bind="promptText" @bind:event="oninput" @onkeydown="HandleKeyDown"
-                  placeholder="@(Placeholder ?? L["ai_placeholder"])"
-                  aria-label="@(Placeholder ?? L["ai_placeholder"])"></textarea>
-        @if (ShowMic && speechSupported)
-        {
-            <button type="button" class="nxt-ai-mic @(isListening ? "listening" : "")" @onclick="ToggleMicAsync"
-                    title="@L["ai_mic"]" aria-label="@L["ai_mic"]" aria-pressed="@isListening">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg>
-            </button>
-        }
-        <button type="button" class="nxt-ai-send" @onclick="() => SendAsync(promptText)"
-                disabled="@(string.IsNullOrWhiteSpace(promptText) || isBusy)"
-                title="@L["ai_send"]" aria-label="@L["ai_send"]">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>
-        </button>
-    </div>
+<div class="nxt-ai-composer">
+    <NxtComposer @bind-Value="promptText" OnSubmit="SendAsync" Disabled="isBusy"
+                 Placeholder="@Placeholder" ShowMic="ShowMic" SpeechLanguage="@SpeechLanguage" />
 </div>
 
 @code {
@@ -106,40 +89,21 @@
     [Parameter] public string? EmptyText { get; set; }
     [Parameter] public string? Placeholder { get; set; }
     [Parameter] public IReadOnlyList<string>? Suggestions { get; set; }
-    [Parameter] public bool ShowMic { get; set; }
+    [Parameter] public bool ShowMic { get; set; } = true;
     /// <summary>BCP-47 tag for dictation, e.g. "ar-SA". Defaults to the UI language.</summary>
     [Parameter] public string? SpeechLanguage { get; set; }
 
     private readonly List<AiMessage> messages = new();
     private string promptText = "";
-    private string promptBeforeDictation = "";
     private bool isBusy;
     private bool scrollPending;
-    private bool speechSupported;
-    private bool isListening;
-    private DotNetObjectReference<AiChat>? selfRef;
-
-    private int Rows => Math.Clamp(promptText.Split('\n').Length, 1, 5);
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && ShowMic)
-        {
-            speechSupported = await JS.InvokeAsync<bool>("nxt.speech.isSupported");
-            if (speechSupported) StateHasChanged();
-        }
-
         if (!scrollPending) return;
         scrollPending = false;
         try { await JS.InvokeVoidAsync("nxt.scrollToId", "nxt-ai-end"); }
         catch (JSException) { /* purely cosmetic */ }
-    }
-
-    private async Task HandleKeyDown(KeyboardEventArgs e)
-    {
-        // Enter sends on desktop; Shift+Enter keeps a newline.
-        if (e.Key == "Enter" && !e.ShiftKey && !e.IsComposing)
-            await SendAsync(promptText);
     }
 
     private void Add(bool fromUser, AiReply reply)
@@ -152,7 +116,6 @@
     {
         var text = input.Trim();
         if (text.Length == 0 || isBusy) return;
-        if (isListening) await StopMicAsync();
 
         Add(true, new AiReply { Text = text });
         promptText = "";
@@ -178,33 +141,5 @@
             isBusy = false;
             scrollPending = true;
         }
-    }
-
-    private async Task ToggleMicAsync()
-    {
-        if (isListening) { await StopMicAsync(); return; }
-        selfRef ??= DotNetObjectReference.Create(this);
-        promptBeforeDictation = string.IsNullOrWhiteSpace(promptText) ? "" : promptText.TrimEnd() + " ";
-        var lang = SpeechLanguage ?? (Locale.Language switch { "ar" => "ar-SA", "de" => "de-DE", _ => "en-US" });
-        isListening = await JS.InvokeAsync<bool>("nxt.speech.start", selfRef, lang);
-    }
-
-    private async Task StopMicAsync()
-    {
-        isListening = false;
-        await JS.InvokeVoidAsync("nxt.speech.stop");
-    }
-
-    [JSInvokable] public void OnSpeechResult(string transcript) { promptText = promptBeforeDictation + transcript; StateHasChanged(); }
-    [JSInvokable] public void OnSpeechError(string error) { isListening = false; StateHasChanged(); }
-    [JSInvokable] public void OnSpeechEnded() { isListening = false; StateHasChanged(); }
-
-    public async ValueTask DisposeAsync()
-    {
-        if (isListening)
-        {
-            try { await JS.InvokeVoidAsync("nxt.speech.stop"); } catch (JSDisconnectedException) { }
-        }
-        selfRef?.Dispose();
     }
 }

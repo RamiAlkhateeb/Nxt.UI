@@ -396,6 +396,7 @@ body {
     font: inherit; line-height: 1.45;
 }
 .nxt-composer-input::placeholder { color: var(--nxt-text-2); }
+.nxt-composer-input:focus, .nxt-composer-input:focus-visible { outline: none; box-shadow: none; } /* the pill shows focus */
 .nxt-composer.is-listening .nxt-composer-input::placeholder { color: var(--nxt-accent); }
 .nxt-composer-mic, .nxt-composer-send {
     flex: 0 0 40px; width: 40px; height: 40px; min-height: 0; padding: 0;

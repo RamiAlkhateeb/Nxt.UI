@@ -1,0 +1,16 @@
+@namespace Nxt.UI.Components
+
+<input id="@Id" class="nxt-input @CssClass" type="@Type" value="@Value"
+       placeholder="@Placeholder" disabled="@Disabled" @oninput="HandleInput" @attributes="AdditionalAttributes" />
+
+@code {
+    [Parameter] public string? Id { get; set; }
+    [Parameter] public string Value { get; set; } = "";
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+    [Parameter] public string Type { get; set; } = "text";
+    [Parameter] public string? Placeholder { get; set; }
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public string CssClass { get; set; } = "";
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+    private Task HandleInput(ChangeEventArgs args) => ValueChanged.InvokeAsync(args.Value?.ToString() ?? "");
+}

@@ -1,0 +1,18 @@
+@namespace Nxt.UI.Settings
+@inject NxtText L
+
+<NxtSettingsSection Icon="📲" Title="@L["install_title"]" Description="@L["install_desc"]">
+    @if (!string.IsNullOrWhiteSpace(Href))
+    {
+        <a class="nxt-link" href="@Href">@L["install_link"] ›</a>
+    }
+    else
+    {
+        <p class="nxt-settings-note">@L["install_steps"]</p>
+    }
+</NxtSettingsSection>
+
+@code {
+    /// <summary>Link to the app's illustrated install guide. Without one, short text steps are shown.</summary>
+    [Parameter] public string? Href { get; set; }
+}

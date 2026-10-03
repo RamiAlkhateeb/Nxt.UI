@@ -1,0 +1,56 @@
+@namespace Nxt.UI.Settings
+@inject NxtOptions Options
+@inject INxtLocale Locale
+@inject NxtText L
+@inject IJSRuntime JS
+
+<NxtSettingsSection Title="@L["about_title"]">
+    <div class="nxt-about">
+        <NxtAppLogo Src="@Options.LogoUrl" Alt="@AppName(Self)" Size="64" />
+        <div>
+            <strong class="nxt-about-name">@AppName(Self)</strong>
+            @if (!string.IsNullOrWhiteSpace(Description)) { <p>@Description</p> }
+            @if (!string.IsNullOrWhiteSpace(version)) { <span class="nxt-caption" dir="ltr">@L.T("about_version", version)</span> }
+        </div>
+    </div>
+    @ChildContent
+    <a class="nxt-link" href="https://ramialkhateeb.github.io/" target="_blank" rel="noopener noreferrer">@L["about_dev"]</a>
+
+    <div class="nxt-family">
+        <h3>@L["about_more_apps"]</h3>
+        <div class="nxt-family-apps">
+            @foreach (var app in NxtFamily.Apps.Where(a => a.Id != Options.App))
+            {
+                <a class="nxt-family-app" href="@app.Url" target="_blank" rel="noopener">
+                    <NxtAppLogo Src="@app.Logo" Alt="" Size="44" />
+                    <span>@AppName(app)</span>
+                </a>
+            }
+        </div>
+    </div>
+</NxtSettingsSection>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private string? version;
+    private NxtFamilyApp Self => NxtFamily.Get(Options.App);
+
+    private string AppName(NxtFamilyApp app) => Locale.Language == "ar" ? app.NameAr : app.NameEn;
+
+    private string? Description =>
+        Options.Description.TryGetValue(Locale.Language, out var d) ? d
+        : Options.Description.TryGetValue("en", out var en) ? en
+        : Options.Description.Values.FirstOrDefault();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        try
+        {
+            version = await JS.InvokeAsync<string?>("nxt.getVersion");
+            if (version is not null) StateHasChanged();
+        }
+        catch (JSException) { }
+    }
+}

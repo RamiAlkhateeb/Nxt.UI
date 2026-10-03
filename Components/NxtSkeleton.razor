@@ -1,0 +1,16 @@
+@namespace Nxt.UI.Components
+
+@* Shimmering placeholder cards shown while a list loads. *@
+<div class="nxt-skeleton-list" aria-hidden="true">
+    @for (var i = 0; i < Count; i++)
+    {
+        <div class="nxt-skeleton-card">
+            <span class="nxt-skeleton-line" style="width: 62%"></span>
+            <span class="nxt-skeleton-line" style="width: 38%"></span>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public int Count { get; set; } = 3;
+}

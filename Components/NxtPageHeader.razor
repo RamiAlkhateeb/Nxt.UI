@@ -1,0 +1,29 @@
+@namespace Nxt.UI.Components
+@inject INxtLocale Locale
+
+<header class="nxt-page-header @CssClass" dir="@Locale.Direction">
+    @if (!string.IsNullOrWhiteSpace(BackHref))
+    {
+        <a class="nxt-icon-button nxt-back" href="@BackHref" aria-label="@BackLabel" title="@BackLabel">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+        </a>
+    }
+    <div class="nxt-page-header-text">
+        @if (!string.IsNullOrWhiteSpace(Eyebrow)) { <p class="nxt-eyebrow">@Eyebrow</p> }
+        <h1>@if (!string.IsNullOrWhiteSpace(Icon)) { <span class="nxt-page-header-icon" aria-hidden="true">@Icon</span> } @Title</h1>
+        @if (!string.IsNullOrWhiteSpace(Subtitle)) { <p>@Subtitle</p> }
+    </div>
+    @if (ChildContent is not null) { <div class="nxt-page-header-actions">@ChildContent</div> }
+</header>
+
+@code {
+    [Parameter, EditorRequired] public string Title { get; set; } = "";
+    [Parameter] public string? Subtitle { get; set; }
+    [Parameter] public string? Eyebrow { get; set; }
+    [Parameter] public string? Icon { get; set; }
+    [Parameter] public string? BackHref { get; set; }
+    [Parameter] public string BackLabel { get; set; } = "Back";
+    [Parameter] public string CssClass { get; set; } = "";
+    /// <summary>Header actions (icon buttons) shown at the inline end.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

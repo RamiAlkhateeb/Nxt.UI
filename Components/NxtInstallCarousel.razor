@@ -1,0 +1,67 @@
+@namespace Nxt.UI.Components
+@inject NxtText L
+@inject INxtLocale Locale
+
+@* Step-by-step screenshot carousel ("Add to Home Screen"). Slides are supplied by the app. *@
+<div class="nxt-carousel" dir="@Locale.Direction">
+    @if (ShowProgress && Slides.Count > 1)
+    {
+        <p class="nxt-carousel-progress">@L.T("step", current + 1, Slides.Count)</p>
+    }
+
+    <div class="nxt-carousel-viewport">
+        <div class="nxt-carousel-track" style="transform: translateX(@(current * -100)%);">
+            @foreach (var slide in Slides)
+            {
+                <div class="nxt-carousel-slide">
+                    <div class="nxt-carousel-copy">
+                        @if (!string.IsNullOrWhiteSpace(slide.Badge)) { <span class="nxt-badge">@slide.Badge</span> }
+                        <h3>@slide.Title</h3>
+                    </div>
+                    <img class="nxt-carousel-img" src="@slide.Image" alt="@slide.Alt" loading="lazy" />
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="nxt-carousel-dots" aria-hidden="true">
+        @for (var i = 0; i < Slides.Count; i++)
+        {
+            <span class="@(i == current ? "active" : "")"></span>
+        }
+    </div>
+
+    <div class="nxt-carousel-actions">
+        @if (current > 0)
+        {
+            <button type="button" class="nxt-button nxt-button-secondary" @onclick="() => Go(current - 1)">@L["back"]</button>
+        }
+        else
+        {
+            <span></span>
+        }
+        @if (current < Slides.Count - 1)
+        {
+            <button type="button" class="nxt-button nxt-button-primary" @onclick="() => Go(current + 1)">@L["next"]</button>
+        }
+        else
+        {
+            <button type="button" class="nxt-button nxt-button-accent" @onclick="OnFinish">@(FinishText ?? L["start"])</button>
+        }
+    </div>
+</div>
+
+@code {
+    public sealed record Slide(string Title, string Image, string Alt, string? Badge = null);
+
+    [Parameter, EditorRequired] public IReadOnlyList<Slide> Slides { get; set; } = [];
+    [Parameter] public bool ShowProgress { get; set; } = true;
+    [Parameter] public string? FinishText { get; set; }
+    [Parameter] public EventCallback OnFinish { get; set; }
+
+    private int current;
+
+    protected override void OnParametersSet() => current = Math.Clamp(current, 0, Math.Max(0, Slides.Count - 1));
+
+    private void Go(int index) => current = Math.Clamp(index, 0, Math.Max(0, Slides.Count - 1));
+}

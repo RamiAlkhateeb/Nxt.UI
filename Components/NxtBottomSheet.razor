@@ -1,0 +1,23 @@
+@namespace Nxt.UI.Components
+@inject INxtLocale Locale
+
+@if (IsOpen)
+{
+    <div class="nxt-sheet-backdrop" @onclick="OnDismiss">
+        <section class="nxt-sheet @CssClass" role="dialog" aria-modal="true" aria-label="@Title" dir="@Locale.Direction" @onclick:stopPropagation="true">
+            <div class="nxt-sheet-handle"></div>
+            @if (!string.IsNullOrWhiteSpace(Eyebrow)) { <p class="nxt-sheet-eyebrow">@Eyebrow</p> }
+            @if (!string.IsNullOrWhiteSpace(Title)) { <h2>@Title</h2> }
+            @ChildContent
+        </section>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public string? Eyebrow { get; set; }
+    [Parameter] public string CssClass { get; set; } = "";
+    [Parameter] public EventCallback OnDismiss { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

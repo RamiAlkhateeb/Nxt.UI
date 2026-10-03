@@ -1,0 +1,36 @@
+@namespace Nxt.UI.Components
+@inject IJSRuntime JS
+@inject NxtText L
+@inject INxtLocale Locale
+
+@* Place once in the app layout. Compares version.json with the version this browser last ran;
+   on a change it offers a refresh that also updates the service worker. *@
+@if (newVersion is not null)
+{
+    <div class="nxt-version-banner" role="status" dir="@Locale.Direction">
+        <span>@L["update_available"]</span>
+        <button type="button" class="nxt-button nxt-button-accent" @onclick="Reload">@L["update_refresh"]</button>
+        <button type="button" class="nxt-icon-button" title="@L["dismiss"]" aria-label="@L["dismiss"]" @onclick="Dismiss">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+    </div>
+}
+
+@code {
+    private string? newVersion;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        try
+        {
+            newVersion = await JS.InvokeAsync<string?>("nxt.checkVersion");
+            if (newVersion is not null) StateHasChanged();
+        }
+        catch (JSException) { /* offline or no version.json: nothing to offer */ }
+    }
+
+    private void Dismiss() => newVersion = null;
+
+    private Task Reload() => JS.InvokeVoidAsync("nxt.applyUpdate", newVersion).AsTask();
+}

@@ -1,0 +1,19 @@
+@namespace Nxt.UI.Components
+@inject INxtLocale Locale
+
+<div class="nxt-empty-state nxt-card @CssClass" dir="@Locale.Direction">
+    @if (IconContent is not null) { <div class="nxt-empty-state-icon" aria-hidden="true">@IconContent</div> }
+    else if (!string.IsNullOrWhiteSpace(Icon)) { <div class="nxt-empty-state-icon" aria-hidden="true">@Icon</div> }
+    <h2>@Title</h2>
+    @if (!string.IsNullOrWhiteSpace(Message)) { <p>@Message</p> }
+    @ChildContent
+</div>
+
+@code {
+    [Parameter] public string? Icon { get; set; }
+    [Parameter] public RenderFragment? IconContent { get; set; }
+    [Parameter, EditorRequired] public string Title { get; set; } = "";
+    [Parameter] public string? Message { get; set; }
+    [Parameter] public string CssClass { get; set; } = "";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

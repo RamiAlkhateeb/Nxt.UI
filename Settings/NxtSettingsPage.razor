@@ -1,0 +1,30 @@
+@namespace Nxt.UI.Settings
+@inject INxtLocale Locale
+@inject NxtText L
+@implements IDisposable
+
+@* The family settings page. Every app shows the same cards in the same order:
+   app-specific sections → language → appearance → AI → install → about. *@
+<div class="nxt-settings" dir="@Locale.Direction">
+    <NxtPageHeader Icon="⚙️" Title="@L["settings_title"]" Subtitle="@L["settings_subtitle"]" BackHref="@BackHref" BackLabel="@L["back"]" />
+    <div class="nxt-settings-sections">
+        @AppSections
+        @if (Locale.Languages.Count > 1) { <LanguageSection /> }
+        <ThemeSection />
+        @if (ShowAi) { <AiSection /> }
+        <InstallSection Href="@InstallHref" />
+        <AboutSection>@AboutContent</AboutSection>
+    </div>
+</div>
+
+@code {
+    [Parameter] public RenderFragment? AppSections { get; set; }
+    [Parameter] public RenderFragment? AboutContent { get; set; }
+    [Parameter] public bool ShowAi { get; set; } = true;
+    [Parameter] public string? InstallHref { get; set; }
+    [Parameter] public string? BackHref { get; set; }
+
+    protected override void OnInitialized() => Locale.Changed += Refresh;
+    private void Refresh() => InvokeAsync(StateHasChanged);
+    public void Dispose() => Locale.Changed -= Refresh;
+}

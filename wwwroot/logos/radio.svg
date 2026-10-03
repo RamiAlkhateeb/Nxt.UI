@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="g-radio" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ff2d55"/>
+      <stop offset="1" stop-color="#8c0f30"/>
+    </linearGradient>
+    <radialGradient id="h-radio" cx=".3" cy=".1" r=".9">
+      <stop offset="0" stop-color="#fff" stop-opacity=".28"/>
+      <stop offset=".55" stop-color="#fff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" rx="114" fill="url(#g-radio)"/>
+  <rect width="512" height="512" rx="114" fill="url(#h-radio)"/>
+  <g fill="none" stroke="#fff" stroke-width="30" stroke-linecap="round" stroke-linejoin="round">
+    <!-- broadcast: a station dot with waves on both sides, on a mast -->
+    <path d="M190 178a94 94 0 0 0 0 132"/>
+    <path d="M322 178a94 94 0 0 1 0 132"/>
+    <path d="M140 128a164 164 0 0 0 0 232"/>
+    <path d="M372 128a164 164 0 0 1 0 232"/>
+    <path d="M256 268v148"/>
+  </g>
+  <circle cx="256" cy="244" r="34" fill="#fff"/>
+</svg>

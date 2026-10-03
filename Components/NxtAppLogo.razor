@@ -1,0 +1,10 @@
+@namespace Nxt.UI.Components
+
+<img class="nxt-app-logo @CssClass" src="@Src" alt="@Alt" width="@Size" height="@Size" style="--nxt-logo-size: @(Size)px" />
+
+@code {
+    [Parameter, EditorRequired] public string Src { get; set; } = "";
+    [Parameter] public string Alt { get; set; } = "";
+    [Parameter] public int Size { get; set; } = 56;
+    [Parameter] public string CssClass { get; set; } = "";
+}

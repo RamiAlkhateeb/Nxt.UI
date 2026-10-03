@@ -1,0 +1,21 @@
+@namespace Nxt.UI.Components
+@typeparam TValue
+
+@* Pill segmented control (theme picker, one-day / multi-day toggle, language). *@
+<div class="nxt-segmented @CssClass" role="radiogroup" aria-label="@Label">
+    @foreach (var option in Options)
+    {
+        var selected = EqualityComparer<TValue>.Default.Equals(option.Value, Value);
+        <button type="button" role="radio" aria-checked="@selected" class="@(selected ? "active" : "")" @onclick="() => Select(option.Value)">@option.Text</button>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyList<(TValue Value, string Text)> Options { get; set; } = [];
+    [Parameter] public TValue? Value { get; set; }
+    [Parameter] public EventCallback<TValue> ValueChanged { get; set; }
+    [Parameter] public string? Label { get; set; }
+    [Parameter] public string CssClass { get; set; } = "";
+
+    private Task Select(TValue value) => ValueChanged.InvokeAsync(value);
+}

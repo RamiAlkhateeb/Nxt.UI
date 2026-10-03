@@ -1,0 +1,17 @@
+@namespace Nxt.UI.Components
+@inject ToastService Toasts
+@inject INxtLocale Locale
+@implements IDisposable
+
+@* Place once in the app layout. *@
+@if (Toasts.Current is { } toast)
+{
+    @* @key restarts the enter animation when a newer toast replaces the visible one. *@
+    <div @key="toast.Id" class="nxt-toast @(toast.IsError ? "is-error" : "")" role="status" aria-live="polite" dir="@Locale.Direction" @onclick="Toasts.Hide">@toast.Text</div>
+}
+
+@code {
+    protected override void OnInitialized() => Toasts.Changed += Refresh;
+    private void Refresh() => InvokeAsync(StateHasChanged);
+    public void Dispose() => Toasts.Changed -= Refresh;
+}

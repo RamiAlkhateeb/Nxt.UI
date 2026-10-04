@@ -12,10 +12,11 @@
   <rect width="512" height="512" rx="114" fill="url(#g-makdous)"/>
   <rect width="512" height="512" rx="114" fill="url(#h-makdous)"/>
   <g fill="none" stroke="#fff" stroke-width="30" stroke-linecap="round" stroke-linejoin="round">
-    <!-- eggplant (makdous): long curved body, leafy calyx, stem -->
-    <path d="M334 206c40 26 50 84 26 138c-28 62-96 92-160 84c-52-6-78-50-58-90c16-32 58-40 96-62c40-24 56-52 66-72"/>
-    <path d="M262 220c12-30 40-46 70-40c18 4 30 16 34 34"/>
-    <path d="M322 180l26-58"/>
+    <!-- plate with fork and knife -->
+    <circle cx="256" cy="260" r="96"/>
+    <path d="M78 138v64a22 22 0 0 0 44 0v-64"/>
+    <path d="M100 224v132"/>
+    <path d="M424 138c-32 38-32 98 0 126v92"/>
   </g>
-  <path d="M188 372c26 12 62 8 92-12" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="18" stroke-linecap="round"/>
+  <circle cx="256" cy="260" r="46" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="16"/>
 </svg>

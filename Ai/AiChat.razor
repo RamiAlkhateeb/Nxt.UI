@@ -36,9 +36,11 @@
             </div>
         }
 
-        @foreach (var message in messages)
+        @for (var i = 0; i < messages.Count; i++)
         {
+            var message = messages[i];
             var reply = message.Reply;
+            var isLast = i == messages.Count - 1;
             <div class="nxt-ai-row @(message.FromUser ? "from-user" : "from-ai")">
                 <div class="nxt-ai-bubble @(reply.IsError ? "is-error" : "")">
                     @if (!string.IsNullOrWhiteSpace(reply.Text))
@@ -65,6 +67,15 @@
                     }
                 </div>
             </div>
+            @if (isLast && !isBusy && !message.FromUser && reply.Choices.Count > 0)
+            {
+                <div class="nxt-ai-choices">
+                    @foreach (var choice in reply.Choices)
+                    {
+                        <button type="button" class="nxt-chip" @onclick="@(() => SendAsync(choice))">@choice</button>
+                    }
+                </div>
+            }
         }
 
         @if (isBusy)

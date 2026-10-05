@@ -19,6 +19,9 @@ public sealed class AiReply
     public string? ActionHref { get; init; }
     public bool ActionNewTab { get; init; }
 
+    /// <summary>Quick replies shown as chips under the latest reply; tapping one sends it as the user's message.</summary>
+    public IReadOnlyList<string> Choices { get; init; } = [];
+
     public static AiReply Error(string text) => new() { Text = text, IsError = true };
 }
 

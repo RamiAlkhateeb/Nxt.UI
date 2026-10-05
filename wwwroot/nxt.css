@@ -330,6 +330,8 @@ body {
 .nxt-ai-empty p { margin: 0; max-width: 280px; }
 .nxt-ai-suggestions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; max-width: 420px; }
 .nxt-ai-suggestions .nxt-chip { color: var(--nxt-text); background: var(--nxt-card); border-color: var(--nxt-border); }
+.nxt-ai-choices { display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 8px; max-width: 86%; }
+.nxt-ai-choices .nxt-chip { color: var(--nxt-text); background: var(--nxt-card); border-color: var(--nxt-border); text-align: start; }
 
 .nxt-orb { position: relative; width: 150px; height: 150px; display: grid; place-items: center; }
 .nxt-orb-core { position: relative; z-index: 2; width: 76px; height: 76px; display: grid; place-items: center; border-radius: 50%; background: radial-gradient(circle at 30% 28%, #ff6b85 0%, var(--nxt-accent) 38%, #1c1c1e 100%); box-shadow: 0 10px 30px rgba(var(--nxt-accent-rgb), .35); animation: nxt-orb-float 3.6s ease-in-out infinite; }

@@ -9,7 +9,7 @@ Each app consumes it as a git submodule at `lib/Nxt.UI` with a `ProjectReference
 - Components: `NxtButton`, `NxtIconButton`, `NxtCard`, `NxtPageHeader`, `NxtBottomSheet`, `NxtEmptyState`, `NxtTextInput`, `NxtChip`, `NxtSegmented`, `NxtSpinner`, `NxtSkeleton`, `NxtToastHost` (+ `ToastService`), `NxtVersionBanner`, `NxtInstallCarousel`, `NxtAppLogo`
 - `NxtSettingsPage`: the same settings cards in every app (app sections → language → appearance → AI → install → about)
 - AI: `GeminiClient` (model fallback, structured JSON), `AiSettingsService`, and the `AiChat` component
-- `wwwroot/logos/`: the family logo SVGs
+- `wwwroot/logos/`: the family logos (PNG, cut from `design/family-icons-source.webp`): NxtTask, Makdous, Syrian Radio, Courses, Carousel Engine. `tools/export-icons.sh <name> <dir>` writes an app's favicon, PWA and apple-touch icons
 
 ## Using it in an app
 ```html
@@ -20,6 +20,6 @@ Each app consumes it as a git submodule at `lib/Nxt.UI` with a `ProjectReference
 ```
 ```csharp
 builder.Services.AddSingleton<INxtLocale>(new FixedLocale(FixedLocale.Arabic)); // or an adapter
-builder.Services.AddNxtUi(o => { o.App = NxtAppId.Radio; o.LogoUrl = "img/logo.svg"; });
+builder.Services.AddNxtUi(o => { o.App = NxtAppId.Radio; o.LogoUrl = "img/logo.png"; });
 ```
 Put `<NxtToastHost />` and `<NxtVersionBanner />` in the main layout.

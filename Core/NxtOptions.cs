@@ -15,7 +15,7 @@ public sealed class NxtOptions
     public Dictionary<string, string> Description { get; set; } = new();
 
     /// <summary>Path of the app's own logo, relative to the app base.</summary>
-    public string LogoUrl { get; set; } = "logo.svg";
+    public string LogoUrl { get; set; } = "logo.png";
 
     /// <summary>
     /// Old, app-specific localStorage keys that held a value now stored under an <c>nxt.*</c> key.
@@ -35,9 +35,9 @@ public static class NxtFamily
 {
     public static readonly IReadOnlyList<NxtFamilyApp> Apps =
     [
-        new(NxtAppId.Makdous, "مكدوس", "Makdous", "https://meal-planner-af799.web.app/", "_content/Nxt.UI/logos/makdous.svg"),
-        new(NxtAppId.NxtTask, "نكست تاسك", "NxtTask", "https://task-breaker.pages.dev/", "_content/Nxt.UI/logos/nxttask.svg"),
-        new(NxtAppId.Radio, "راديو سوريا", "Syrian Radio", "https://syrian-radio.pages.dev/", "_content/Nxt.UI/logos/radio.svg"),
+        new(NxtAppId.Makdous, "مكدوس", "Makdous", "https://meal-planner-af799.web.app/", "_content/Nxt.UI/logos/makdous.png"),
+        new(NxtAppId.NxtTask, "نكست تاسك", "NxtTask", "https://task-breaker.pages.dev/", "_content/Nxt.UI/logos/nxttask.png"),
+        new(NxtAppId.Radio, "راديو سوريا", "Syrian Radio", "https://syrian-radio.pages.dev/", "_content/Nxt.UI/logos/radio.png"),
     ];
 
     public static NxtFamilyApp Get(NxtAppId id) => Apps.First(a => a.Id == id);

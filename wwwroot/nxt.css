@@ -130,6 +130,7 @@ body {
 .nxt-icon-button:active:not(:disabled) { transform: scale(.94); }
 .nxt-icon-button:disabled { opacity: .5; cursor: not-allowed; }
 .nxt-icon-button.is-accent { background: var(--nxt-accent); color: var(--nxt-on-accent); }
+.nxt-icon { width: 1em; height: 1em; flex: 0 0 auto; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .nxt-icon-button svg {
     width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;
 }
@@ -157,6 +158,7 @@ body {
 .nxt-page-header h1 { font-size: 28px; line-height: 1.3; font-weight: 700; margin: 0; color: var(--nxt-text); }
 .nxt-page-header-text > p:not(.nxt-eyebrow) { color: var(--nxt-text-2); font-size: 14px; margin: var(--nxt-space-1) 0 0; }
 .nxt-page-header-icon { margin-inline-end: 6px; }
+.nxt-page-header-icon .nxt-icon { width: .85em; height: .85em; vertical-align: -.08em; color: var(--nxt-accent); }
 .nxt-page-header-actions { display: flex; gap: var(--nxt-space-2); align-items: center; }
 
 .nxt-input {
@@ -285,7 +287,8 @@ body {
 .nxt-settings-sections { padding: var(--nxt-space-4); display: grid; gap: var(--nxt-space-3); }
 .nxt-settings-card { display: grid; gap: var(--nxt-space-3); }
 .nxt-settings-card-head { display: flex; gap: var(--nxt-space-3); align-items: flex-start; }
-.nxt-settings-icon { width: 40px; height: 40px; flex: 0 0 auto; display: grid; place-items: center; border-radius: var(--nxt-radius-sm); background: var(--nxt-accent-soft); font-size: 20px; }
+.nxt-settings-icon { width: 40px; height: 40px; flex: 0 0 auto; display: grid; place-items: center; border-radius: var(--nxt-radius-sm); background: var(--nxt-accent-soft); font-size: 20px; color: var(--nxt-accent); }
+.nxt-settings-icon .nxt-icon { width: 22px; height: 22px; }
 .nxt-settings-card h2 { font-size: 18px; font-weight: 700; margin: 0; }
 .nxt-settings-card-head p, .nxt-settings-note { color: var(--nxt-text-2); font-size: 14px; margin: 2px 0 0; }
 .nxt-settings-card .nxt-button { justify-self: start; }

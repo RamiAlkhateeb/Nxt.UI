@@ -2,7 +2,7 @@
 @inject ThemeService Theme
 @inject NxtText L
 
-<NxtSettingsSection Icon="🌓" Title="@L["theme_title"]" Description="@L["theme_desc"]">
+<NxtSettingsSection Icon="contrast" Title="@L["theme_title"]" Description="@L["theme_desc"]">
     <NxtSegmented TValue="string" Label="@L["theme_title"]" Value="@mode" ValueChanged="SetAsync"
                   Options="@([("system", L["theme_system"]), ("light", L["theme_light"]), ("dark", L["theme_dark"])])" />
 </NxtSettingsSection>

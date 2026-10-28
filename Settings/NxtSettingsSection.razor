@@ -3,7 +3,8 @@
 @* One card on the settings page. Apps use this for their own sections so they match the shared ones. *@
 <NxtCard CssClass="@($"nxt-settings-card {CssClass}")">
     <div class="nxt-settings-card-head">
-        @if (!string.IsNullOrWhiteSpace(Icon)) { <span class="nxt-settings-icon" aria-hidden="true">@Icon</span> }
+        @if (NxtIcon.Has(Icon)) { <span class="nxt-settings-icon" aria-hidden="true"><NxtIcon Name="@(Icon!)" /></span> }
+        else if (!string.IsNullOrWhiteSpace(Icon)) { <span class="nxt-settings-icon" aria-hidden="true">@Icon</span> }
         <div>
             <h2>@Title</h2>
             @if (!string.IsNullOrWhiteSpace(Description)) { <p>@Description</p> }
@@ -15,6 +16,7 @@
 @code {
     [Parameter, EditorRequired] public string Title { get; set; } = "";
     [Parameter] public string? Description { get; set; }
+    /// <summary>An <see cref="NxtIcon"/> name (line icon), or any text such as an emoji.</summary>
     [Parameter] public string? Icon { get; set; }
     [Parameter] public string CssClass { get; set; } = "";
     [Parameter] public RenderFragment? ChildContent { get; set; }

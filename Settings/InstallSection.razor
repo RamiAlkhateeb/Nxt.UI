@@ -1,7 +1,7 @@
 @namespace Nxt.UI.Settings
 @inject NxtText L
 
-<NxtSettingsSection Icon="📲" Title="@L["install_title"]" Description="@L["install_desc"]">
+<NxtSettingsSection Icon="smartphone" Title="@L["install_title"]" Description="@L["install_desc"]">
     @if (!string.IsNullOrWhiteSpace(Href))
     {
         <a class="nxt-link" href="@Href">@L["install_link"]</a>

@@ -6,7 +6,7 @@
 @* The family settings page. Every app shows the same cards in the same order:
    app-specific sections → language → appearance → AI → install → about. *@
 <div class="nxt-settings" dir="@Locale.Direction">
-    <NxtPageHeader Icon="⚙️" Title="@L["settings_title"]" Subtitle="@L["settings_subtitle"]" BackHref="@BackHref" BackLabel="@L["back"]" />
+    <NxtPageHeader Icon="settings" Title="@L["settings_title"]" Subtitle="@L["settings_subtitle"]" BackHref="@BackHref" BackLabel="@L["back"]" />
     <div class="nxt-settings-sections">
         @AppSections
         @if (Locale.Languages.Count > 1) { <LanguageSection /> }

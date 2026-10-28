@@ -10,7 +10,7 @@
     }
     <div class="nxt-page-header-text">
         @if (!string.IsNullOrWhiteSpace(Eyebrow)) { <p class="nxt-eyebrow">@Eyebrow</p> }
-        <h1>@if (!string.IsNullOrWhiteSpace(Icon)) { <span class="nxt-page-header-icon" aria-hidden="true">@Icon</span> } @Title</h1>
+        <h1>@if (NxtIcon.Has(Icon)) { <span class="nxt-page-header-icon" aria-hidden="true"><NxtIcon Name="@(Icon!)" /></span> } else if (!string.IsNullOrWhiteSpace(Icon)) { <span class="nxt-page-header-icon" aria-hidden="true">@Icon</span> } @Title</h1>
         @if (!string.IsNullOrWhiteSpace(Subtitle)) { <p>@Subtitle</p> }
     </div>
     @if (ChildContent is not null) { <div class="nxt-page-header-actions">@ChildContent</div> }
@@ -20,6 +20,7 @@
     [Parameter, EditorRequired] public string Title { get; set; } = "";
     [Parameter] public string? Subtitle { get; set; }
     [Parameter] public string? Eyebrow { get; set; }
+    /// <summary>An <see cref="NxtIcon"/> name (line icon), or any text such as an emoji.</summary>
     [Parameter] public string? Icon { get; set; }
     [Parameter] public string? BackHref { get; set; }
     [Parameter] public string BackLabel { get; set; } = "Back";

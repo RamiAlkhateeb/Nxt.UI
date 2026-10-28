@@ -2,7 +2,7 @@
 @inject INxtLocale Locale
 @inject NxtText L
 
-<NxtSettingsSection Icon="🌐" Title="@L["lang_title"]" Description="@L["lang_desc"]">
+<NxtSettingsSection Icon="globe" Title="@L["lang_title"]" Description="@L["lang_desc"]">
     <NxtSegmented TValue="string" Label="@L["lang_title"]" Value="@Locale.Language" ValueChanged="Locale.SetLanguageAsync"
                   Options="@Locale.Languages.Select(l => (l.Code, $"{l.Flag} {l.NativeName}")).ToList()" />
 </NxtSettingsSection>

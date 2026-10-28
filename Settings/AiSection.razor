@@ -5,7 +5,7 @@
 @inject ToastService Toasts
 @inject NxtText L
 
-<NxtSettingsSection Icon="✨" Title="@L["ai_title"]" Description="@L["ai_desc"]">
+<NxtSettingsSection Icon="sparkles" Title="@L["ai_title"]" Description="@L["ai_desc"]">
     <label class="nxt-label" for="nxt-ai-key">@L["ai_key_label"]</label>
     <input id="nxt-ai-key" class="nxt-input" type="password" dir="ltr" autocomplete="off" spellcheck="false"
            @bind="apiKey" @bind:event="oninput" placeholder="@L["ai_key_placeholder"]" />

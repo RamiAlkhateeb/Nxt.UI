@@ -17,6 +17,25 @@ public sealed class NxtText
 
     public string T(string key, params object[] args) => string.Format(this[key], args);
 
+    /// <summary>A Gemini failure in the user's language, with Google's own reason in brackets.</summary>
+    public string AiError(Exception ex) => ex switch
+    {
+        Ai.AiKeyMissingException => this["ai_no_key"],
+        Ai.GeminiApiException g => g.Kind switch
+        {
+            Ai.GeminiErrorKind.InvalidKey => T("ai_err_key", g.Detail),
+            Ai.GeminiErrorKind.Quota => T("ai_err_quota", g.Detail),
+            Ai.GeminiErrorKind.ModelUnavailable => T("ai_err_model", g.Model ?? "", g.Detail),
+            Ai.GeminiErrorKind.Blocked => T("ai_err_blocked", g.Detail),
+            _ => T("ai_err_other", g.Detail)
+        },
+        _ => T("ai_err_other", ex.Message)
+    };
+
+    /// <summary>"gemini-2.5-pro didn't answer, so gemini-2.5-flash-lite replied", or null when the selected model answered.</summary>
+    public string? AiFallbackNote(Ai.GeminiFallback? fallback) =>
+        fallback is null ? null : T("ai_fallback_note", fallback.Requested, fallback.Used);
+
     private static readonly Dictionary<string, Dictionary<string, string>> Strings = new()
     {
         ["ar"] = new()
@@ -40,6 +59,13 @@ public sealed class NxtText
             ["ai_save"] = "حفظ",
             ["ai_saved"] = "تم حفظ إعدادات المساعد.",
             ["ai_no_models"] = "تعذّر جلب النماذج. تحقق من المفتاح.",
+            ["ai_model_saved"] = "سيستخدم المساعد {0}.",
+            ["ai_err_key"] = "مفتاح Gemini غير صالح أو لم يعد يعمل. تحقق منه في الإعدادات. ({0})",
+            ["ai_err_quota"] = "تجاوزت حدّ الاستخدام في Gemini حاليًا. انتظر قليلًا أو اختر نموذجًا آخر. ({0})",
+            ["ai_err_model"] = "النموذج {0} غير متاح لمفتاحك. اختر نموذجًا آخر في الإعدادات. ({1})",
+            ["ai_err_blocked"] = "لم يُكمل Gemini الرد. جرّب صياغة أقصر. ({0})",
+            ["ai_err_other"] = "تعذّر الوصول إلى Gemini. حاول مرة أخرى. ({0})",
+            ["ai_fallback_note"] = "لم يرد {0}، فأجاب {1}.",
             ["install_title"] = "تثبيت التطبيق",
             ["install_desc"] = "أضف التطبيق إلى الشاشة الرئيسية ليعمل كتطبيق كامل.",
             ["install_link"] = "طريقة التثبيت",
@@ -89,6 +115,13 @@ public sealed class NxtText
             ["ai_save"] = "Save",
             ["ai_saved"] = "Assistant settings saved.",
             ["ai_no_models"] = "Couldn't load models. Check your key.",
+            ["ai_model_saved"] = "The assistant will use {0}.",
+            ["ai_err_key"] = "Your Gemini key isn't valid or no longer works. Check it in Settings. ({0})",
+            ["ai_err_quota"] = "You've hit Gemini's usage limit for now. Wait a little or choose another model. ({0})",
+            ["ai_err_model"] = "The model {0} isn't available for your key. Choose another one in Settings. ({1})",
+            ["ai_err_blocked"] = "Gemini didn't finish the reply. Try asking more briefly. ({0})",
+            ["ai_err_other"] = "Couldn't reach Gemini. Please try again. ({0})",
+            ["ai_fallback_note"] = "{0} didn't answer, so {1} replied.",
             ["install_title"] = "Install the app",
             ["install_desc"] = "Add it to your home screen so it opens like a native app.",
             ["install_link"] = "How to install",
@@ -138,6 +171,13 @@ public sealed class NxtText
             ["ai_save"] = "Speichern",
             ["ai_saved"] = "Assistent-Einstellungen gespeichert.",
             ["ai_no_models"] = "Modelle konnten nicht geladen werden. Prüfe den Schlüssel.",
+            ["ai_model_saved"] = "Der Assistent nutzt {0}.",
+            ["ai_err_key"] = "Dein Gemini-Schlüssel ist ungültig oder funktioniert nicht mehr. Prüfe ihn in den Einstellungen. ({0})",
+            ["ai_err_quota"] = "Du hast das Gemini-Nutzungslimit vorerst erreicht. Warte kurz oder wähle ein anderes Modell. ({0})",
+            ["ai_err_model"] = "Das Modell {0} ist für deinen Schlüssel nicht verfügbar. Wähle in den Einstellungen ein anderes. ({1})",
+            ["ai_err_blocked"] = "Gemini hat die Antwort nicht beendet. Versuch es kürzer. ({0})",
+            ["ai_err_other"] = "Gemini ist nicht erreichbar. Bitte versuch es erneut. ({0})",
+            ["ai_fallback_note"] = "{0} hat nicht geantwortet, deshalb hat {1} geantwortet.",
             ["install_title"] = "App installieren",
             ["install_desc"] = "Zum Startbildschirm hinzufügen, damit sie wie eine echte App startet.",
             ["install_link"] = "So geht's",

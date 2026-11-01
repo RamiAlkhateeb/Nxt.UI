@@ -88,6 +88,8 @@ body {
 
 .nxt-eyebrow { color: var(--nxt-accent); font-size: .78rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; margin: 0 0 4px; }
 .nxt-caption { color: var(--nxt-text-2); font-size: 12px; }
+.nxt-hint { margin: 0; font-size: 13px; line-height: 1.45; color: var(--nxt-text); }
+.nxt-hint.is-error { color: var(--nxt-danger); }
 .nxt-label { font-size: 14px; font-weight: 700; color: var(--nxt-text); }
 .nxt-link { color: var(--nxt-accent); font-size: 14px; font-weight: 700; text-decoration: none; min-height: 44px; display: inline-flex; align-items: center; gap: 4px; }
 .nxt-link:hover { text-decoration: underline; }

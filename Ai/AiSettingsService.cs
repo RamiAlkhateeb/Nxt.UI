@@ -8,7 +8,8 @@ public sealed class AiSettingsService
 {
     public const string ApiKeyKey = "nxt.ai.key";
     public const string ModelKey = "nxt.ai.model";
-    public const string DefaultModel = "gemini-3.5-flash-lite";
+    // Google's alias for the current Flash model, so the default never points at a retired one.
+    public const string DefaultModel = "gemini-flash-latest";
 
     private readonly LocalStore _store;
 

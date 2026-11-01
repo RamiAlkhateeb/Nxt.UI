@@ -137,7 +137,12 @@
         {
             if (!await Gemini.HasKeyAsync())
                 throw new AiKeyMissingException();
-            Add(false, await OnSend(text));
+            var before = Gemini.LastFallback;
+            var reply = await OnSend(text);
+            // Say so when another model answered; before the reply, so its quick-reply chips stay on the latest bubble.
+            if (!ReferenceEquals(Gemini.LastFallback, before) && L.AiFallbackNote(Gemini.LastFallback) is { } note)
+                Add(false, new AiReply { Text = note });
+            Add(false, reply);
         }
         catch (AiKeyMissingException)
         {
@@ -145,7 +150,7 @@
         }
         catch (Exception ex)
         {
-            Add(false, AiReply.Error(ex.Message));
+            Add(false, AiReply.Error(L.AiError(ex)));
         }
         finally
         {

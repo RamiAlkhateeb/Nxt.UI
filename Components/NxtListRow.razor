@@ -1,0 +1,16 @@
+@namespace Nxt.UI.Components
+
+@* A label / value row; rows inside a .nxt-list get dividers between them. *@
+<div class="nxt-list-row @CssClass">
+    <span class="nxt-list-label">@Label</span>
+    <span class="nxt-list-value @(Strong ? "is-strong" : "")">@if (ChildContent is not null) { @ChildContent } else { @Value }</span>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string Label { get; set; } = "";
+    [Parameter] public string? Value { get; set; }
+    [Parameter] public bool Strong { get; set; }
+    [Parameter] public string CssClass { get; set; } = "";
+    /// <summary>Rich value (an icon and text, a link). Replaces <see cref="Value"/>.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

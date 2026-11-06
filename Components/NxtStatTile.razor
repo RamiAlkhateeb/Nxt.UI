@@ -1,0 +1,13 @@
+@namespace Nxt.UI.Components
+
+@* A small card with a caption and a big number (Started / Ends / Worked). Use several in a .nxt-stat-grid. *@
+<div class="nxt-stat-tile @CssClass">
+    <span class="nxt-stat-label">@Label</span>
+    <strong class="nxt-stat-value" dir="ltr">@Value</strong>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string Label { get; set; } = "";
+    [Parameter, EditorRequired] public string Value { get; set; } = "";
+    [Parameter] public string CssClass { get; set; } = "";
+}

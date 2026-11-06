@@ -26,6 +26,7 @@ public sealed class StoredLocale : INxtLocale
 
     public string Language => _current.Code;
     public bool IsRtl => _current.IsRtl;
+    public string Direction => IsRtl ? "rtl" : "ltr";
     public IReadOnlyList<NxtLanguage> Languages { get; }
     public event Action? Changed;
 

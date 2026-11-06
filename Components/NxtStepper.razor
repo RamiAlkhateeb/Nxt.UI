@@ -1,0 +1,32 @@
+@namespace Nxt.UI.Components
+@inject NxtText L
+
+@* − value + control for whole-number settings (shift length in minutes, servings). *@
+<div class="nxt-stepper @CssClass" role="group" aria-label="@Label">
+    <button type="button" class="nxt-stepper-button" aria-label="@(DecreaseLabel ?? L["decrease"])" disabled="@(Value - Step < Min)" @onclick="() => Change(-Step)">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg>
+    </button>
+    <div class="nxt-stepper-value" aria-live="polite">
+        <strong dir="ltr">@(Format?.Invoke(Value) ?? Value.ToString())</strong>
+        @if (!string.IsNullOrWhiteSpace(Hint)) { <small>@Hint</small> }
+    </div>
+    <button type="button" class="nxt-stepper-button" aria-label="@(IncreaseLabel ?? L["increase"])" disabled="@(Value + Step > Max)" @onclick="() => Change(Step)">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+    </button>
+</div>
+
+@code {
+    [Parameter] public int Value { get; set; }
+    [Parameter] public EventCallback<int> ValueChanged { get; set; }
+    [Parameter] public int Step { get; set; } = 1;
+    [Parameter] public int Min { get; set; } = int.MinValue;
+    [Parameter] public int Max { get; set; } = int.MaxValue;
+    [Parameter] public Func<int, string>? Format { get; set; }
+    [Parameter] public string? Hint { get; set; }
+    [Parameter] public string? Label { get; set; }
+    [Parameter] public string? DecreaseLabel { get; set; }
+    [Parameter] public string? IncreaseLabel { get; set; }
+    [Parameter] public string CssClass { get; set; } = "";
+
+    private Task Change(int delta) => ValueChanged.InvokeAsync(Math.Clamp(Value + delta, Min, Max));
+}

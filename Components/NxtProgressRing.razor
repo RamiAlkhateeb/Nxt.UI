@@ -1,0 +1,34 @@
+@namespace Nxt.UI.Components
+
+@* Circular progress (shift countdown, timers). Starts at 12 o'clock and fills clockwise; centre content is free. *@
+<div class="nxt-ring @CssClass" style="--nxt-ring-size: @(Size)px" role="@(Label is null ? null : "progressbar")" aria-label="@Label"
+     aria-valuemin="@(Label is null ? null : "0")" aria-valuemax="@(Label is null ? null : "100")" aria-valuenow="@(Label is null ? null : Percent.ToString())">
+    <svg viewBox="0 0 @Size @Size" width="@Size" height="@Size" aria-hidden="true">
+        <circle class="nxt-ring-track" cx="@Half" cy="@Half" r="@Radius" stroke-width="@Stroke" />
+        @if (Clamped > 0)
+        {
+            <circle class="nxt-ring-value" cx="@Half" cy="@Half" r="@Radius" stroke-width="@Stroke"
+                    stroke-dasharray="@F(Circumference)" stroke-dashoffset="@F(Circumference * (1 - Clamped))"
+                    transform="rotate(-90 @Half @Half)" />
+        }
+    </svg>
+    @if (ChildContent is not null) { <div class="nxt-ring-center">@ChildContent</div> }
+</div>
+
+@code {
+    /// <summary>0 to 1.</summary>
+    [Parameter] public double Progress { get; set; }
+    [Parameter] public int Size { get; set; } = 260;
+    [Parameter] public int Stroke { get; set; } = 14;
+    /// <summary>When set, the ring is exposed as a progressbar with this name.</summary>
+    [Parameter] public string? Label { get; set; }
+    [Parameter] public string CssClass { get; set; } = "";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private double Clamped => double.IsNaN(Progress) ? 0 : Math.Clamp(Progress, 0, 1);
+    private int Percent => (int)Math.Round(Clamped * 100);
+    private int Half => Size / 2;
+    private double Radius => (Size - Stroke) / 2.0;
+    private double Circumference => 2 * Math.PI * Radius;
+    private static string F(double v) => v.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture);
+}

@@ -93,6 +93,8 @@ public sealed class NxtText
             ["start"] = "ابدأ",
             ["step"] = "الخطوة {0} من {1}",
             ["copied"] = "تم النسخ.",
+            ["increase"] = "زيادة",
+            ["decrease"] = "إنقاص",
         },
         ["en"] = new()
         {
@@ -149,6 +151,8 @@ public sealed class NxtText
             ["start"] = "Start",
             ["step"] = "Step {0} of {1}",
             ["copied"] = "Copied.",
+            ["increase"] = "Increase",
+            ["decrease"] = "Decrease",
         },
         ["de"] = new()
         {
@@ -205,6 +209,8 @@ public sealed class NxtText
             ["start"] = "Los geht's",
             ["step"] = "Schritt {0} von {1}",
             ["copied"] = "Kopiert.",
+            ["increase"] = "Erhöhen",
+            ["decrease"] = "Verringern",
         },
     };
 }

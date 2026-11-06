@@ -1,7 +1,7 @@
 namespace Nxt.UI;
 
 /// <summary>Which app of the family is hosting the library. Drives the About card and the "more apps" row.</summary>
-public enum NxtAppId { Makdous, NxtTask, Radio }
+public enum NxtAppId { Makdous, NxtTask, Radio, Shift }
 
 /// <summary>
 /// Per-app configuration passed to <see cref="NxtServiceCollectionExtensions.AddNxtUi"/>.
@@ -38,6 +38,7 @@ public static class NxtFamily
         new(NxtAppId.Makdous, "مكدوس", "Makdous", "https://meal-planner-af799.web.app/", "_content/Nxt.UI/logos/makdous.png"),
         new(NxtAppId.NxtTask, "نكست تاسك", "NxtTask", "https://task-breaker.pages.dev/", "_content/Nxt.UI/logos/nxttask.png"),
         new(NxtAppId.Radio, "راديو سوريا", "Syrian Radio", "https://syrian-radio.pages.dev/", "_content/Nxt.UI/logos/radio.png"),
+        new(NxtAppId.Shift, "نكست شفت", "NxtShift", "https://ramialkhateeb.github.io/NxtShift/", "_content/Nxt.UI/logos/nxtshift.png"),
     ];
 
     public static NxtFamilyApp Get(NxtAppId id) => Apps.First(a => a.Id == id);

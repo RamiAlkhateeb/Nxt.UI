@@ -1,0 +1,22 @@
+@namespace Nxt.UI.Components
+
+@* A native time picker (HH:mm) styled like NxtTextInput. Value is a TimeOnly. *@
+<input id="@Id" class="nxt-input nxt-time-input @CssClass" type="time" dir="ltr"
+       value="@Value.ToString("HH:mm")" min="@Min?.ToString("HH:mm")" max="@Max?.ToString("HH:mm")"
+       disabled="@Disabled" @onchange="HandleChange" @attributes="AdditionalAttributes" />
+
+@code {
+    [Parameter] public string? Id { get; set; }
+    [Parameter] public TimeOnly Value { get; set; }
+    [Parameter] public EventCallback<TimeOnly> ValueChanged { get; set; }
+    [Parameter] public TimeOnly? Min { get; set; }
+    [Parameter] public TimeOnly? Max { get; set; }
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public string CssClass { get; set; } = "";
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private Task HandleChange(ChangeEventArgs e) =>
+        TimeOnly.TryParse(e.Value?.ToString(), System.Globalization.CultureInfo.InvariantCulture, out var t)
+            ? ValueChanged.InvokeAsync(t)
+            : Task.CompletedTask;
+}

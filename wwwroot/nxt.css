@@ -206,6 +206,57 @@ body {
 }
 .nxt-segmented button.active { background: var(--nxt-ink); color: var(--nxt-on-ink); box-shadow: var(--nxt-shadow-sm); }
 
+/* ---------- Progress ring, stat tiles, lists, switches, stepper ---------- */
+.nxt-ring { position: relative; width: var(--nxt-ring-size); height: var(--nxt-ring-size); max-width: 100%; aspect-ratio: 1; margin-inline: auto; }
+.nxt-ring svg { display: block; width: 100%; height: 100%; }
+.nxt-ring-track { fill: none; stroke: var(--nxt-inset); }
+.nxt-ring-value { fill: none; stroke: var(--nxt-accent); stroke-linecap: round; transition: stroke-dashoffset .6s ease; }
+.nxt-ring-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-align: center; }
+@media (prefers-reduced-motion: reduce) { .nxt-ring-value { transition: none; } }
+
+.nxt-stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 10px; }
+.nxt-stat-tile { display: flex; flex-direction: column; gap: 4px; min-width: 0; padding: 12px 14px; background: var(--nxt-card); border: 1px solid var(--nxt-border); border-radius: var(--nxt-radius-md); box-shadow: var(--nxt-shadow-sm); }
+.nxt-stat-label { font-size: 12px; color: var(--nxt-text-2); }
+.nxt-stat-value { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; text-align: start; }
+
+.nxt-list { display: flex; flex-direction: column; }
+.nxt-list > * + * { border-top: 1px solid var(--nxt-border); }
+.nxt-list-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px; font-size: 15px; }
+.nxt-list-label { color: var(--nxt-text-2); }
+.nxt-list-value { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.nxt-list-value.is-strong { font-size: 18px; font-weight: 700; }
+
+.nxt-switch-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 60px; font-size: 15px; cursor: pointer; }
+.nxt-switch-text { display: flex; flex-direction: column; gap: 2px; }
+.nxt-switch-text small { color: var(--nxt-text-2); font-size: 12px; }
+.nxt-switch {
+    appearance: none; -webkit-appearance: none; flex: 0 0 auto; margin: 0;
+    position: relative; width: 50px; height: 30px; border-radius: var(--nxt-radius-pill);
+    background: var(--nxt-border); cursor: pointer; transition: background-color .18s ease;
+}
+.nxt-switch::after {
+    content: ""; position: absolute; top: 3px; inset-inline-start: 3px; width: 24px; height: 24px; border-radius: 50%;
+    background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, .25); transition: inset-inline-start .18s ease;
+}
+.nxt-switch:checked { background: var(--nxt-accent); }
+.nxt-switch:checked::after { inset-inline-start: 23px; }
+.nxt-switch:focus-visible { outline: 2px solid var(--nxt-accent); outline-offset: 2px; }
+.nxt-switch:disabled { opacity: .5; cursor: not-allowed; }
+
+.nxt-stepper { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.nxt-stepper-button {
+    width: 48px; height: 48px; flex: 0 0 auto; display: grid; place-items: center; padding: 0;
+    border: 0; border-radius: 50%; background: var(--nxt-inset); color: var(--nxt-text); cursor: pointer;
+}
+.nxt-stepper-button svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; }
+.nxt-stepper-button:hover:not(:disabled) { background: var(--nxt-accent-soft); color: var(--nxt-accent); }
+.nxt-stepper-button:disabled { opacity: .4; cursor: not-allowed; }
+.nxt-stepper-value { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.nxt-stepper-value strong { font-size: 30px; font-weight: 700; letter-spacing: -.5px; font-variant-numeric: tabular-nums; }
+.nxt-stepper-value small { font-size: 13px; color: var(--nxt-text-2); }
+
+.nxt-time-input { font-size: 22px; font-weight: 700; text-align: center; font-variant-numeric: tabular-nums; }
+
 /* ---------- Empty state, skeleton, spinner ---------- */
 .nxt-empty-state { text-align: center; padding: var(--nxt-space-8) var(--nxt-space-4); }
 .nxt-empty-state-icon { font-size: 48px; margin-bottom: var(--nxt-space-3); color: var(--nxt-accent); display: grid; place-items: center; }

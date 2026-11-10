@@ -10,7 +10,7 @@ Each app consumes it as a git submodule at `lib/Nxt.UI` with a `ProjectReference
 - `NxtSettingsPage`: the same settings cards in every app (app sections → language → appearance → AI → install → about)
 - AI: `GeminiClient` (structured JSON; tries the chosen model, then up to three chat models the key can reach, and reports it in `LastFallback`; failures are `GeminiApiException` with Google's own reason, shown in the user's language by `NxtText.AiError`), `AiSettingsService` (the model saves as soon as it is picked), and the `AiChat` component
 - `StoredLocale`: a switchable `INxtLocale` (kept in `nxt.language`) for apps without their own localization; call `InitializeAsync()` in the main layout
-- `nxt.js` extras: `nxt.notify` (local notifications while the page is alive; no scheduling for a closed app), `nxt.download` (save text as a file, share sheet on iOS), `nxt.chime`, `nxt.onVisible`
+- `nxt.js` extras: `nxt.notify` (local notifications while the page is alive; no scheduling for a closed app), `nxt.download` (save text as a file, share sheet on iOS), `nxt.chime(pattern)` (`"tick"`, `"done"` or the default two-tone; audio unlocks on the first tap), `nxt.onVisible`
 - `wwwroot/logos/`: the family logos (PNG, cut from `design/family-icons-source.webp`): NxtTask, Makdous, Syrian Radio, Courses, Carousel Engine, NxtShift. `tools/export-icons.sh <name> <dir>` writes an app's favicon, PWA and apple-touch icons
 
 ## Using it in an app

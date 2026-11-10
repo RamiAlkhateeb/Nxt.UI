@@ -65,6 +65,42 @@
 
   let speech = null;
   const timers = new Map();
+
+  // [frequency Hz, start s, length s, peak volume]
+  const CHIMES = {
+    default: [[880, 0, 0.4, 0.3], [660, 0.25, 0.4, 0.3]],
+    tick: [[880, 0, 0.25, 0.18]],
+    done: [[523.25, 0, 0.45, 0.35], [659.25, 0.18, 0.45, 0.35], [783.99, 0.36, 0.45, 0.35], [1046.5, 0.54, 0.9, 0.4]],
+  };
+
+  let sharedAudio = null;
+  function audioContext() {
+    if (sharedAudio) return sharedAudio;
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return null;
+    try { sharedAudio = new Ctx(); } catch { return null; }
+    return sharedAudio;
+  }
+  // Unlock audio on the first interaction, so timed sounds can play later.
+  function unlockAudio() {
+    const ctx = audioContext();
+    if (ctx && ctx.state === "suspended") ctx.resume().catch(() => {});
+    if (ctx) {
+      // iOS also wants a sound started inside the gesture.
+      try {
+        const src = ctx.createBufferSource();
+        src.buffer = ctx.createBuffer(1, 1, 22050);
+        src.connect(ctx.destination);
+        src.start(0);
+      } catch { /* ignore */ }
+    }
+    if (ctx && ctx.state === "running") {
+      document.removeEventListener("pointerdown", unlockAudio, true);
+      document.removeEventListener("keydown", unlockAudio, true);
+    }
+  }
+  document.addEventListener("pointerdown", unlockAudio, true);
+  document.addEventListener("keydown", unlockAudio, true);
   const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
   window.nxt = {
@@ -171,12 +207,15 @@
           return true;
         } catch { return false; }
       },
-      /** Calls dotNetRef.OnNotificationDue(id) and shows the notification at atMs (epoch ms). Replaces a timer with the same id. */
+      /**
+       * Calls dotNetRef.OnNotificationDue(id) and shows the notification at atMs (epoch ms); an empty title means
+       * callback only (e.g. a sound), no notification. Replaces a timer with the same id.
+       */
       schedule(id, atMs, title, body, tag, url, dotNetRef) {
         this.cancel(id);
         const fire = () => {
           timers.delete(id);
-          this.show(title, body, tag, url);
+          if (title) this.show(title, body, tag, url);
           if (dotNetRef) dotNetRef.invokeMethodAsync("OnNotificationDue", id).catch(() => {});
         };
         const delay = atMs - Date.now();
@@ -199,24 +238,33 @@
       }
     },
 
-    /** A short two-tone chime (Web Audio, no file). */
-    chime() {
-      try {
-        const Ctx = window.AudioContext || window.webkitAudioContext;
-        const ctx = new Ctx();
-        [[880, 0], [660, 0.25]].forEach(([freq, at]) => {
+    /**
+     * Short sounds made with Web Audio (no files). Patterns:
+     *   (none) the original two-tone chime · "tick" one soft blip · "done" a rising four-note arpeggio.
+     * One AudioContext is shared and unlocked on the first tap, so sounds can play later without a tap
+     * (browsers, iOS above all, keep a context made outside a tap muted). Sound only plays while the page is alive.
+     */
+    chime(pattern) {
+      const ctx = audioContext();
+      if (!ctx) return;
+      const notes = CHIMES[pattern] || CHIMES.default;
+      const play = () => {
+        const t0 = ctx.currentTime + 0.02;
+        notes.forEach(([freq, at, length, volume]) => {
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
+          osc.type = "sine";
           osc.frequency.value = freq;
-          gain.gain.setValueAtTime(0.0001, ctx.currentTime + at);
-          gain.gain.exponentialRampToValueAtTime(0.3, ctx.currentTime + at + 0.02);
-          gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + at + 0.4);
+          gain.gain.setValueAtTime(0.0001, t0 + at);
+          gain.gain.exponentialRampToValueAtTime(volume, t0 + at + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.0001, t0 + at + length);
           osc.connect(gain).connect(ctx.destination);
-          osc.start(ctx.currentTime + at);
-          osc.stop(ctx.currentTime + at + 0.45);
+          osc.start(t0 + at);
+          osc.stop(t0 + at + length + 0.05);
         });
-        setTimeout(() => ctx.close(), 1200);
-      } catch { /* no audio */ }
+      };
+      if (ctx.state === "suspended") ctx.resume().then(play, () => {});
+      else play();
     },
 
     /** Subscribes dotNetRef.OnVisible() to the page becoming visible again. Returns nothing. */

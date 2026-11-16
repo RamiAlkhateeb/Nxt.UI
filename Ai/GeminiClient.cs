@@ -47,6 +47,9 @@ public sealed class GeminiApiException : InvalidOperationException
     public string Detail { get; }
 }
 
+/// <summary>A picture made by <see cref="GeminiClient.GenerateImageAsync"/>: the raw bytes, their type and the model that drew it.</summary>
+public sealed record GeneratedImage(byte[] Data, string MimeType, string Model);
+
 /// <summary>The user's model did not answer, so another one did. Apps show this so the choice is never ignored silently.</summary>
 public sealed record GeminiFallback(string Requested, string Used, GeminiApiException Reason);
 
@@ -77,6 +80,10 @@ public sealed class GeminiClient
     private readonly AiSettingsService _settings;
     private string? _modelsForKey;
     private List<string>? _models;
+    private List<string>? _imageModels;
+
+    /// <summary>Tried when the key's model list cannot be read. Image output is a paid feature on most keys.</summary>
+    private static readonly string[] OfflineImageModels = ["gemini-2.5-flash-image"];
 
     public GeminiClient(HttpClient http, AiSettingsService settings)
     {
@@ -99,6 +106,26 @@ public sealed class GeminiClient
         var n = name.Trim().ToLowerInvariant();
         return n.StartsWith("gemini-", StringComparison.Ordinal) && !NonChatMarkers.Any(n.Contains);
     }
+
+    /// <summary>A Gemini model that can draw (answers with an image part): "gemini-…-image…", not Imagen, Veo or TTS.</summary>
+    public static bool IsImageModel(string? name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return false;
+        var n = name.Trim().ToLowerInvariant();
+        return n.StartsWith("gemini-", StringComparison.Ordinal) && n.Contains("image", StringComparison.Ordinal)
+            && !n.Contains("tts", StringComparison.Ordinal) && !n.Contains("embedding", StringComparison.Ordinal);
+    }
+
+    /// <summary>Image models in the order to try: stable before preview, Flash before Pro (cheaper), newest first.</summary>
+    public static IReadOnlyList<string> RankImageModels(IEnumerable<string> available, int max = 2) =>
+        available
+            .Where(IsImageModel)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(m => m.Contains("preview", StringComparison.OrdinalIgnoreCase) || m.Contains("exp", StringComparison.OrdinalIgnoreCase))
+            .ThenBy(m => m.Contains("flash", StringComparison.OrdinalIgnoreCase) ? 0 : 1)
+            .ThenByDescending(Version)
+            .Take(max)
+            .ToList();
 
     /// <summary>
     /// Backup models to try after <paramref name="selected"/>: chat models only, Flash-Lite first (cheapest, most
@@ -146,16 +173,19 @@ public sealed class GeminiClient
             if (!response.IsSuccessStatusCode) return [];
 
             var result = await response.Content.ReadFromJsonAsync<ModelListResponse>();
-            var models = result?.Models?
+            var names = result?.Models?
                 .Where(model => model.SupportedGenerationMethods?.Contains("generateContent", StringComparer.OrdinalIgnoreCase) == true)
                 .Select(model => model.Name?.Replace("models/", "", StringComparison.OrdinalIgnoreCase))
+                .ToList() ?? [];
+            _imageModels = names.Where(IsImageModel).Select(n => n!).ToList();
+            var models = names
                 .Where(IsChatModel)
                 .Select(name => name!)
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .OrderByDescending(Version)
                 .ThenBy(Tier)
                 .ThenBy(name => name, StringComparer.OrdinalIgnoreCase)
-                .ToList() ?? [];
+                .ToList();
             _models = models;
             _modelsForKey = apiKey;
             return models;
@@ -210,6 +240,73 @@ public sealed class GeminiClient
         // The selected model's error explains most; a later one only says the backups failed too.
         throw firstError ?? lastError
             ?? new GeminiApiException(GeminiErrorKind.Other, selected, null, "None of the Gemini models could answer.");
+    }
+
+    /// <summary>
+    /// Draws a picture for <paramref name="prompt"/> with an image-capable Gemini model the key can reach (see
+    /// <see cref="RankImageModels"/>). Most free keys cannot generate images: that surfaces as a
+    /// <see cref="GeminiApiException"/> of kind <see cref="GeminiErrorKind.Quota"/> or <see cref="GeminiErrorKind.ModelUnavailable"/>
+    /// with Google's own message, like every other failure.
+    /// </summary>
+    public async Task<GeneratedImage> GenerateImageAsync(string prompt)
+    {
+        var apiKey = await _settings.GetApiKeyAsync();
+        if (string.IsNullOrWhiteSpace(apiKey)) throw new AiKeyMissingException();
+
+        await ListModelsAsync();
+        var candidates = RankImageModels(_imageModels is { Count: > 0 } known ? known : OfflineImageModels);
+        GeminiApiException? firstError = null;
+        foreach (var model in candidates)
+        {
+            try
+            {
+                var body = new
+                {
+                    contents = new[] { new { parts = new[] { new { text = prompt } } } },
+                    generationConfig = new { responseModalities = new[] { "TEXT", "IMAGE" } }
+                };
+                using var request = new HttpRequestMessage(HttpMethod.Post, $"{BaseUrl}models/{Uri.EscapeDataString(model)}:generateContent")
+                {
+                    Content = JsonContent.Create(body)
+                };
+                request.Headers.Add("x-goog-api-key", apiKey);
+                using var response = await _http.SendAsync(request);
+                if (!response.IsSuccessStatusCode) throw await ToExceptionAsync(response, model);
+                var image = ImageFrom(await response.Content.ReadAsStringAsync(), model);
+                LastModel = model;
+                return image;
+            }
+            catch (GeminiApiException ex)
+            {
+                firstError ??= ex;
+                if (ex.Kind == GeminiErrorKind.InvalidKey) throw;
+            }
+            catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or JsonException)
+            {
+                firstError ??= new GeminiApiException(GeminiErrorKind.Other, model, null, ex.Message, ex);
+            }
+        }
+        throw firstError ?? new GeminiApiException(GeminiErrorKind.ModelUnavailable, null, null, "This key cannot use a Gemini image model.");
+    }
+
+    /// <summary>Reads the first image part of a generateContent reply; throws a <see cref="GeminiApiException"/> when there is none.</summary>
+    public static GeneratedImage ImageFrom(string json, string model)
+    {
+        GeminiResponse? result;
+        try { result = JsonSerializer.Deserialize<GeminiResponse>(json, JsonOptions); }
+        catch (JsonException ex) { throw new GeminiApiException(GeminiErrorKind.Other, model, null, "Gemini returned an invalid response.", ex); }
+        if (result?.PromptFeedback?.BlockReason is { Length: > 0 } blocked)
+            throw new GeminiApiException(GeminiErrorKind.Blocked, model, null, blocked);
+        var candidate = result?.Candidates?.FirstOrDefault();
+        var part = candidate?.Content?.Parts?.FirstOrDefault(p => p.InlineData?.Data is { Length: > 0 } && p.Thought != true);
+        if (part?.InlineData is not { Data: { Length: > 0 } data } inline)
+        {
+            if (candidate?.FinishReason is { Length: > 0 } reason && reason != "STOP")
+                throw new GeminiApiException(GeminiErrorKind.Blocked, model, null, reason);
+            throw new GeminiApiException(GeminiErrorKind.Other, model, null, "Gemini returned no picture.");
+        }
+        try { return new GeneratedImage(Convert.FromBase64String(data), string.IsNullOrWhiteSpace(inline.MimeType) ? "image/png" : inline.MimeType, model); }
+        catch (FormatException ex) { throw new GeminiApiException(GeminiErrorKind.Other, model, null, "Gemini returned an unreadable picture.", ex); }
     }
 
     private async Task<IEnumerable<string>> GetModelsToTryAsync(string selected)
@@ -318,6 +415,12 @@ public sealed class GeminiClient
     {
         [JsonPropertyName("text")] public string? Text { get; set; }
         [JsonPropertyName("thought")] public bool? Thought { get; set; }
+        [JsonPropertyName("inlineData")] public InlineData? InlineData { get; set; }
+    }
+    private sealed class InlineData
+    {
+        [JsonPropertyName("mimeType")] public string? MimeType { get; set; }
+        [JsonPropertyName("data")] public string? Data { get; set; }
     }
     private sealed class ErrorResponse { [JsonPropertyName("error")] public ErrorBody? Error { get; set; } }
     private sealed class ErrorBody

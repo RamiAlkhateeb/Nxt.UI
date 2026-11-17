@@ -132,6 +132,7 @@ body {
 .nxt-icon-button:active:not(:disabled) { transform: scale(.94); }
 .nxt-icon-button:disabled { opacity: .5; cursor: not-allowed; }
 .nxt-icon-button.is-accent { background: var(--nxt-accent); color: var(--nxt-on-accent); }
+.nxt-icon.is-filled { fill: currentColor; }
 .nxt-icon { width: 1em; height: 1em; flex: 0 0 auto; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .nxt-icon-button svg {
     width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;
@@ -316,6 +317,10 @@ body {
 }
 :root[data-theme="dark"] .nxt-toast { background: var(--nxt-text); color: var(--nxt-page); }
 .nxt-toast.is-error { background: var(--nxt-danger); color: #fff; }
+.nxt-toast.has-action { display: flex; align-items: center; gap: var(--nxt-space-3); text-align: start; padding-block: 6px; padding-inline-end: 6px; }
+.nxt-toast.has-action > span { flex: 1 1 auto; }
+.nxt-toast-action { flex: 0 0 auto; min-height: 40px; padding-inline: 14px; border: 0; border-radius: var(--nxt-radius-sm); background: transparent; color: var(--nxt-accent); font: inherit; font-weight: 800; cursor: pointer; }
+.nxt-toast-action:hover, .nxt-toast-action:focus-visible { background: rgba(255,255,255,.12); }
 @keyframes nxt-toast-in { from { opacity: 0; transform: translateY(8px); } }
 
 .nxt-version-banner {

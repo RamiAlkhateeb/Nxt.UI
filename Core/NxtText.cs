@@ -21,6 +21,12 @@ public sealed class NxtText
     public string AiError(Exception ex) => ex switch
     {
         Ai.AiKeyMissingException => this["ai_no_key"],
+        Ai.AiFallbackException f => f.Kind switch
+        {
+            Ai.AiFallbackErrorKind.SignInRequired => this["ai_fb_sign_in"],
+            Ai.AiFallbackErrorKind.LimitReached => this["ai_fb_limit"],
+            _ => T("ai_fb_other", f.Detail)
+        },
         Ai.GeminiApiException g => g.Kind switch
         {
             Ai.GeminiErrorKind.InvalidKey => T("ai_err_key", g.Detail),
@@ -76,6 +82,10 @@ public sealed class NxtText
             ["about_more_apps"] = "تطبيقات أخرى من العائلة",
             ["ai_go_settings"] = "اذهب إلى الإعدادات",
             ["ai_no_key"] = "أضف مفتاح Gemini في الإعدادات لتفعيل المساعد.",
+            ["ai_fb_sign_in"] = "سجّل الدخول أو أضف مفتاح Gemini في الإعدادات لاستخدام الذكاء الاصطناعي.",
+            ["ai_fb_limit"] = "استخدمت الحد اليومي للذكاء الاصطناعي المدمج. حاول غدًا، أو أضف مفتاح Gemini في الإعدادات.",
+            ["ai_fb_other"] = "تعذّر الحصول على رد من الذكاء الاصطناعي المدمج. حاول مرة أخرى. ({0})",
+            ["ai_fb_note"] = "بدون مفتاح، يستخدم المسجّلون الذكاء الاصطناعي المدمج بحدّ يومي. المفتاح الخاص يعطيك حدودًا أعلى.",
             ["ai_thinking"] = "أفكّر…",
             ["ai_send"] = "إرسال",
             ["ai_mic"] = "إملاء صوتي",
@@ -134,6 +144,10 @@ public sealed class NxtText
             ["about_more_apps"] = "More apps in the family",
             ["ai_go_settings"] = "Open Settings",
             ["ai_no_key"] = "Add a Gemini key in Settings to turn on the assistant.",
+            ["ai_fb_sign_in"] = "Sign in, or add a Gemini key in Settings, to use AI.",
+            ["ai_fb_limit"] = "You've used today's built-in AI allowance. Try again tomorrow, or add a Gemini key in Settings.",
+            ["ai_fb_other"] = "The built-in AI didn't answer. Please try again. ({0})",
+            ["ai_fb_note"] = "Without a key, signed-in users get built-in AI with a daily limit. Your own key gives higher limits.",
             ["ai_thinking"] = "Thinking…",
             ["ai_send"] = "Send",
             ["ai_mic"] = "Dictate",
@@ -192,6 +206,10 @@ public sealed class NxtText
             ["about_more_apps"] = "Weitere Apps der Familie",
             ["ai_go_settings"] = "Einstellungen öffnen",
             ["ai_no_key"] = "Füge in den Einstellungen einen Gemini-Schlüssel hinzu.",
+            ["ai_fb_sign_in"] = "Melde dich an oder füge in den Einstellungen einen Gemini-Schlüssel hinzu, um KI zu nutzen.",
+            ["ai_fb_limit"] = "Das heutige Kontingent der eingebauten KI ist aufgebraucht. Versuch es morgen oder füge einen Gemini-Schlüssel hinzu.",
+            ["ai_fb_other"] = "Die eingebaute KI hat nicht geantwortet. Bitte versuch es erneut. ({0})",
+            ["ai_fb_note"] = "Ohne Schlüssel nutzen angemeldete Nutzer die eingebaute KI mit Tageslimit. Ein eigener Schlüssel bietet höhere Limits.",
             ["ai_thinking"] = "Denke nach…",
             ["ai_send"] = "Senden",
             ["ai_mic"] = "Diktieren",

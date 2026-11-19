@@ -135,8 +135,10 @@
 
         try
         {
-            if (!await Gemini.HasKeyAsync())
-                throw new AiKeyMissingException();
+            if (!await Gemini.CanGenerateAsync())
+                throw Gemini.HasFallback
+                    ? new AiFallbackException(AiFallbackErrorKind.SignInRequired, "Sign in or add a Gemini key.")
+                    : new AiKeyMissingException();
             var before = Gemini.LastFallback;
             var reply = await OnSend(text);
             // Say so when another model answered; before the reply, so its quick-reply chips stay on the latest bubble.

@@ -7,7 +7,13 @@
 @if (Toasts.Current is { } toast)
 {
     @* @key restarts the enter animation when a newer toast replaces the visible one. *@
-    <div @key="toast.Id" class="nxt-toast @(toast.IsError ? "is-error" : "")" role="status" aria-live="polite" dir="@Locale.Direction" @onclick="Toasts.Hide">@toast.Text</div>
+    <div @key="toast.Id" class="nxt-toast @(toast.IsError ? "is-error" : "") @(toast.Action is null ? "" : "has-action")" role="status" aria-live="polite" dir="@Locale.Direction" @onclick="Toasts.Hide">
+        <span>@toast.Text</span>
+        @if (toast.Action is not null)
+        {
+            <button type="button" class="nxt-toast-action" @onclick="Toasts.RunActionAsync" @onclick:stopPropagation="true">@toast.ActionLabel</button>
+        }
+    </div>
 }
 
 @code {

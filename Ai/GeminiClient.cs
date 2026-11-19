@@ -85,11 +85,22 @@ public sealed class GeminiClient
     /// <summary>Tried when the key's model list cannot be read. Image output is a paid feature on most keys.</summary>
     private static readonly string[] OfflineImageModels = ["gemini-2.5-flash-image"];
 
-    public GeminiClient(HttpClient http, AiSettingsService settings)
+    private readonly IReadOnlyList<IAiFallback> _fallbacks;
+
+    public GeminiClient(HttpClient http, AiSettingsService settings) : this(http, settings, []) { }
+
+    public GeminiClient(HttpClient http, AiSettingsService settings, IEnumerable<IAiFallback> fallbacks)
     {
         _http = http;
         _settings = settings;
+        _fallbacks = fallbacks.ToList();
     }
+
+    /// <summary>True when the app offers an AI for users without a Gemini key (see <see cref="IAiFallback"/>).</summary>
+    public bool HasFallback => _fallbacks.Count > 0;
+
+    /// <summary>True when a request can be made: a Gemini key is set, or the app's fallback is usable right now.</summary>
+    public async Task<bool> CanGenerateAsync() => await HasKeyAsync() || _fallbacks.Any(fallback => fallback.IsAvailable);
 
     /// <summary>The model that produced the last successful reply.</summary>
     public string? LastModel { get; private set; }
@@ -205,7 +216,7 @@ public sealed class GeminiClient
     public async Task<T> GenerateJsonAsync<T>(string prompt, object schema, Func<T, T>? validate = null)
     {
         var apiKey = await _settings.GetApiKeyAsync();
-        if (string.IsNullOrWhiteSpace(apiKey)) throw new AiKeyMissingException();
+        if (string.IsNullOrWhiteSpace(apiKey)) return await GenerateWithFallbackAsync(prompt, schema, validate);
 
         var selected = await _settings.GetModelAsync();
         LastFallback = null;
@@ -240,6 +251,29 @@ public sealed class GeminiClient
         // The selected model's error explains most; a later one only says the backups failed too.
         throw firstError ?? lastError
             ?? new GeminiApiException(GeminiErrorKind.Other, selected, null, "None of the Gemini models could answer.");
+    }
+
+    /// <summary>No Gemini key: ask the app's fallback, if it has one the user can use.</summary>
+    private async Task<T> GenerateWithFallbackAsync<T>(string prompt, object schema, Func<T, T>? validate)
+    {
+        if (_fallbacks.Count == 0) throw new AiKeyMissingException();
+        var fallback = _fallbacks.FirstOrDefault(candidate => candidate.IsAvailable)
+            ?? throw new AiFallbackException(AiFallbackErrorKind.SignInRequired, "Sign in or add a Gemini key.");
+
+        var text = await fallback.GenerateJsonAsync(prompt, schema);
+        try
+        {
+            var result = JsonSerializer.Deserialize<T>(text, JsonOptions)
+                ?? throw new AiFallbackException(AiFallbackErrorKind.Other, $"{fallback.Name} returned an empty answer.");
+            if (validate is not null) result = validate(result);
+            LastModel = fallback.Name;
+            LastFallback = null;
+            return result;
+        }
+        catch (Exception ex) when (ex is JsonException or (InvalidOperationException and not AiFallbackException))
+        {
+            throw new AiFallbackException(AiFallbackErrorKind.Other, $"{fallback.Name} returned an answer the app couldn't use.", ex);
+        }
     }
 
     /// <summary>

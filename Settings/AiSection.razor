@@ -12,6 +12,7 @@
     <input id="nxt-ai-key" class="nxt-input" type="password" dir="ltr" autocomplete="off" spellcheck="false"
            @bind="apiKey" @bind:event="oninput" @onchange="KeyChangedAsync" placeholder="@L["ai_key_placeholder"]" />
     <a class="nxt-link" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer">@L["ai_key_link"]</a>
+    @if (Gemini.HasFallback) { <p class="nxt-hint">@L["ai_fb_note"]</p> }
 
     <label class="nxt-label" for="nxt-ai-model">@L["ai_model_label"]</label>
     <div class="nxt-input-row">
